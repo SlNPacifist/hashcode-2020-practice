@@ -30,7 +30,13 @@ export const solve = ({
         const booksTakenAmount = daysLeft * library.booksPerDay;
         const booksTaken = books.slice(0, booksTakenAmount);
         const score = booksTaken.reduce((sum, val) => sum + val.price, 0);
-        return [score / library.signup, booksTaken.map(({index}) => index)];
+        let fine = 0;
+        if (daysLeft > 0) {
+            const emptyDays = days - (booksTaken.length / library.booksPerDay);
+            const scorePerDay = score / daysLeft;
+            fine = Math.min(score / 2, emptyDays * scorePerDay * 0.1);
+        }
+        return [(score - fine) / library.signup, booksTaken.map(({index}) => index)];
     }
     type ScoredOrder = {
         index: number;
