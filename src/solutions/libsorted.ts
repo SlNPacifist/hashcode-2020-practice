@@ -8,7 +8,7 @@ type RuntimeLibrary = {
     score: number;
 };
 
-function computeLibraryScore(lib: RuntimeLibrary, input: InputData): number {
+function computeLibraryScore(lib: RuntimeLibrary, input: InputData, excludeBooks: Set<number>): number {
     let remainingBooks = (input.days - lib.inputLib.signup) * lib.inputLib.booksPerDay
     if (remainingBooks <= 0)
         return 0
@@ -17,11 +17,14 @@ function computeLibraryScore(lib: RuntimeLibrary, input: InputData): number {
     for (let bookId of lib.sortedBooks) {
         if (remainingBooks == 0)
             break
+        if (excludeBooks.has(bookId))
+            continue
         res += input.bookPrices[bookId]
         --remainingBooks
     }
 
-    return res / Math.sqrt(lib.inputLib.signup)
+    return Math.random()
+    // return res / Math.sqrt(lib.inputLib.signup)
 }
 
 function makeRuntimeLibrary(id: number, lib: Library): RuntimeLibrary {
@@ -60,17 +63,16 @@ function sortLibraries(libs: RuntimeLibrary[]): void {
 
 export const solve = ({ bookPrices, libraries, days }: InputData): OutputData => {
     let libs: RuntimeLibrary[] = libraries.map((l: Library, id: number) => makeRuntimeLibrary(id, l))
+    let processed = new Set<number>()
     libs.forEach((lib: RuntimeLibrary) => {
         lib.sortedBooks.sort((bId1: number, bId2: number) => {
             return bookPrices[bId2] - bookPrices[bId1]
         })
-        lib.score = computeLibraryScore(lib, {bookPrices, libraries, days})
+        lib.score = computeLibraryScore(lib, {bookPrices, libraries, days}, processed)
     })
     sortLibraries(libs)
 
     let result: SignedLibrary[] = []
-
-    let processed = new Set<number>()
 
     let signupDays = days;
 
