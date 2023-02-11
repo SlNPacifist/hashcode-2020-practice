@@ -19,7 +19,7 @@ const files: Array<string> = [
 // relative to this file
 const solutionsPath = './solutions';
 
-const skippedSolutions = ['per-day-shuffled.ts', 'libsorted.ts'];
+const skippedSolutions = ['per-day-shuffled.ts'];
 
 async function loadSolutions(): Promise<Record<string, Solution>> {
     const fullSolutionsPath = `${__dirname}/${solutionsPath}`;
