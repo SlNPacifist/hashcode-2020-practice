@@ -20,9 +20,9 @@ const solutionsPath = './solutions';
 async function loadSolutions(): Promise<Record<string, Solution>> {
     const fullSolutionsPath = `${__dirname}/${solutionsPath}`;
     const solutionNames = await fs.readdir(fullSolutionsPath);
-    const solutions = await Promise.all(
-        solutionNames.map(name => import(`${solutionsPath}/${name}`) as Promise<Solution>)
-    );
+    const solutions = (await Promise.all(
+        solutionNames.map(name => import(`${solutionsPath}/${name}`) as Promise<{solve: Solution}>)
+    )).map(({solve}) => solve);
 
     return _.zipObject(solutionNames, solutions);
 }
@@ -35,12 +35,14 @@ async function run() {
     for (const input_file of files) {
         const full_input_file = `./input/${input_file}`;
         const data = readFile(full_input_file);
+        console.log(data);
         const tableRow = [input_file];
         let best = 0;
         for (let i = 0; i < solutionFuncs.length; i += 1) {
             const solve = solutionFuncs[i];
             const solution = solve(data);
-            const score = calculateScore(full_input_file, solution);
+            // const score = calculateScore(full_input_file, solution);
+            const score = 0;
             tableRow.push(String(score));
             totalScore[i] += score;
             best = Math.max(best, score);
