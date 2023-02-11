@@ -10,6 +10,7 @@ export const solve = ({
     let res = Array<SignedLibrary>();
     const processedBooks = new Set<number>();
     const potentialBooks = new Set<number>();
+
     const libraryBooks = new Array<Heap<number>>();
     const bookCmp = (b1: number, b2: number) => {
         return bookPrices[b2] - bookPrices[b1];
@@ -25,7 +26,7 @@ export const solve = ({
             .filter(bookId => !potentialBooks.has(bookId))
             .map(bookId => ({price: bookPrices[bookId], index: bookId}))
             .sort((a, b) => b.price - a.price);
-        const daysLeft = days - curDay - library.signup;
+        const daysLeft = Math.max(days - curDay - library.signup, 0);
         const booksTakenAmount = daysLeft * library.booksPerDay;
         const booksTaken = books.slice(0, booksTakenAmount);
         const score = booksTaken.reduce((sum, val) => sum + val.price, 0);
