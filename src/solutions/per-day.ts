@@ -45,7 +45,7 @@ export const solve = ({
     }
 
     for (let i = 0; i < days; i++) {
-        for (let l = 0; l < res.length - (pendingSignup <= i ? 0 : 1); l++) {
+        for (let l = res.length - (pendingSignup <= i ? 0 : 1) - 1; l >= 0; l--) {
             const lib = res[l];
             const library = libraries[lib.library];
             for (let j = 0; j < library.booksPerDay; j++) {
