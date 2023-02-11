@@ -35,7 +35,6 @@ async function run() {
     for (const input_file of files) {
         const full_input_file = `./input/${input_file}`;
         const data = readFile(full_input_file);
-        console.log(data);
         const tableRow = [input_file];
         let best = 0;
         for (let i = 0; i < solutionFuncs.length; i += 1) {
