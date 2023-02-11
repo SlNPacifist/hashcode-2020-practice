@@ -6,7 +6,12 @@ import readFile from './input';
 import { calculateScore } from './score';
 import type { Solution } from './types';
 const files: Array<string> = [
-    // file names in input
+    "a_example.txt",
+    "b_read_on.txt",
+    "c_incunabula.txt",
+    "d_tough_choices.txt",
+    "e_so_many_books.txt",
+    "f_libraries_of_the_world.txt",
 ];
 
 // relative to this file
