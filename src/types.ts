@@ -10,6 +10,11 @@ export type Library = {
     booksPerDay: number;
 };
 
-export type OutputData = {};
+export type SignedLibrary = {
+    library: number;
+    books: Array<number>;
+};
+
+export type OutputData = Array<SignedLibrary>;
 
 export type Solution = (input: InputData) => OutputData;
