@@ -1,4 +1,5 @@
 import Heap from "heap";
+import _ from "lodash";
 import { InputData, OutputData, SignedLibrary } from "../types";
 
 export const solve = ({
@@ -50,9 +51,27 @@ export const solve = ({
         });
     }
 
+    const daysLeft = (a: SignedLibrary) => {
+        const library = libraries[a.library];
+        return libraryBooks[a.library].size() / library.booksPerDay;
+        // const booksLeft = library
+        //     .books
+        //     .filter()
+        //     .length;
+        // return booksLeft / library.
+    }
+
+    let pendingLibraryIndex;
     for (let i = 0; i < days; i++) {
-        for (let l = res.length - (pendingSignup <= i ? 0 : 1) - 1; l >= 0; l--) {
-            const lib = res[l];
+        if (pendingSignup === i && pendingLibraryIndex !== undefined) {
+            res.push({
+                library: pendingLibraryIndex,
+                books: [],
+            });
+        }
+
+        const libOrder = _.sortBy(res, daysLeft);
+        for (const lib of libOrder) {
             const library = libraries[lib.library];
             for (let j = 0; j < library.booksPerDay; j++) {
                 let book;
@@ -92,10 +111,7 @@ export const solve = ({
                 break;
             }
             if (lib) {
-                res.push({
-                    library: lib.index,
-                    books: [],
-                });
+                pendingLibraryIndex = lib.index;
                 pendingSignup = i + libraries[lib.index].signup;
                 for (const bookId of books) {
                     potentialBooks.add(bookId);
