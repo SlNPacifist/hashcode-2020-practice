@@ -23,8 +23,8 @@ function computeLibraryScore(lib: RuntimeLibrary, input: InputData, excludeBooks
         --remainingBooks
     }
 
-    return Math.random()
-    // return res / Math.sqrt(lib.inputLib.signup)
+    // return Math.random()
+    return Math.sqrt(res) / lib.inputLib.signup
 }
 
 function makeRuntimeLibrary(id: number, lib: Library): RuntimeLibrary {
@@ -57,7 +57,7 @@ function pushBooks(lib: RuntimeLibrary, processed: Set<number>, remainingDays: n
 
 function sortLibraries(libs: RuntimeLibrary[]): void {
     libs.sort((l1: RuntimeLibrary, l2: RuntimeLibrary) => {
-        return l1.score - l2.score
+        return l2.score - l1.score
     })
 }
 
