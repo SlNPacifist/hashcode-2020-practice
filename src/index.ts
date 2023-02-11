@@ -5,6 +5,7 @@ import * as fs from 'node:fs/promises';
 import readFile from './input';
 import { calculateScore } from './score';
 import type { Solution } from './types';
+import { format } from './output';
 const files: Array<string> = [
     "a_example.txt",
     "b_read_on.txt",
@@ -45,6 +46,8 @@ async function run() {
             tableRow.push(String(score));
             totalScore[i] += score;
             best = Math.max(best, score);
+            const res = format(solution);
+            await fs.writeFile(`./output/${input_file}`, res);
         }
         totalScore[solutionFuncs.length] += best;
         tableRow.push(String(best));
