@@ -19,15 +19,20 @@ const files: Array<string> = [
 // relative to this file
 const solutionsPath = './solutions';
 
+const skippedSolutions = ['per-day-shuffled.ts', 'libsorted.ts'];
+
 async function loadSolutions(): Promise<Record<string, Solution>> {
     const fullSolutionsPath = `${__dirname}/${solutionsPath}`;
-    const solutionNames = await fs.readdir(fullSolutionsPath);
+    const solutionNames = (await fs.readdir(fullSolutionsPath))
+        .filter(name => !skippedSolutions.includes(name));
     const solutions = (await Promise.all(
-        solutionNames.map(name => import(`${solutionsPath}/${name}`) as Promise<{solve: Solution}>)
+        solutionNames
+            .map(name => import(`${solutionsPath}/${name}`) as Promise<{solve: Solution}>)
     )).map(({solve}) => solve);
 
     return _.zipObject(solutionNames, solutions);
 }
+
 
 async function run() {
     const solutions = await loadSolutions();
