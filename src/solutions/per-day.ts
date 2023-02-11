@@ -29,7 +29,7 @@ export const solve = ({
         const booksTakenAmount = daysLeft * library.booksPerDay;
         const booksTaken = books.slice(0, booksTakenAmount);
         const score = booksTaken.reduce((sum, val) => sum + val.price, 0);
-        return [score, booksTaken.map(({index}) => index)];
+        return [score / library.signup, booksTaken.map(({index}) => index)];
     }
     type ScoredOrder = {
         index: number;
