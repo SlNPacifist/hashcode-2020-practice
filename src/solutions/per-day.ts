@@ -53,6 +53,5 @@ export const solve = ({
         }
     }
 
-    console.log(res);
     return res;
 }
