@@ -6,6 +6,7 @@ import readFile from './input';
 import { calculateScore } from './score';
 import type { Solution } from './types';
 import { format } from './output';
+import { computeScore } from './simple_score'
 const files: Array<string> = [
     "a_example.txt",
     "b_read_on.txt",
@@ -41,8 +42,8 @@ async function run() {
         for (let i = 0; i < solutionFuncs.length; i += 1) {
             const solve = solutionFuncs[i];
             const solution = solve(data);
-            // const score = calculateScore(full_input_file, solution);
-            const score = 0;
+            const score = computeScore(data, solution);
+            // const score = 0;
             tableRow.push(String(score));
             totalScore[i] += score;
             best = Math.max(best, score);
