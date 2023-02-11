@@ -34,7 +34,7 @@ export const solve = ({
         if (daysLeft > 0) {
             const emptyDays = days - (booksTaken.length / library.booksPerDay);
             const scorePerDay = score / daysLeft;
-            fine = Math.min(score / 2, emptyDays * scorePerDay * 0.1);
+            fine = Math.min(score / 1.5, emptyDays * scorePerDay * 0.15);
         }
         return [(score - fine) / library.signup, booksTaken.map(({index}) => index)];
     }
