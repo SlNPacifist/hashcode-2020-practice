@@ -9,6 +9,7 @@ export const solve = ({
     let pendingSignup = 0;
     let res = Array<SignedLibrary>();
     const processedBooks = new Set<number>();
+    const potentialBooks = new Set<number>();
     const libraryBooks = new Array<Heap<number>>();
     const bookCmp = (b1: number, b2: number) => {
         return bookPrices[b2] - bookPrices[b1];
@@ -18,15 +19,17 @@ export const solve = ({
         lib.books.forEach(b => books.push(b));
         libraryBooks.push(books);
     }
-    const libraryScore = (index: number, curDay: number) => {
+    const libraryScore = (index: number, curDay: number): [number, Array<number>] => {
         const library = libraries[index];
         const books = library.books
-            .filter(bookId => !processedBooks.has(bookId))
-            .map(bookId => bookPrices[bookId])
-            .sort((a, b) => b - a);
+            .filter(bookId => !potentialBooks.has(bookId))
+            .map(bookId => ({price: bookPrices[bookId], index: bookId}))
+            .sort((a, b) => b.price - a.price);
         const daysLeft = days - curDay - library.signup;
-        const booksTaken = daysLeft * library.booksPerDay;
-        return books.slice(0, booksTaken).reduce((sum, val) => sum + val, 0);
+        const booksTakenAmount = daysLeft * library.booksPerDay;
+        const booksTaken = books.slice(0, booksTakenAmount);
+        const score = booksTaken.reduce((sum, val) => sum + val.price, 0);
+        return [score, booksTaken.map(({index}) => index)];
     }
     type ScoredOrder = {
         index: number;
@@ -36,7 +39,7 @@ export const solve = ({
     for (let i = 0; i < libraries.length; i += 1) {
         order.push({
             index: i,
-            score: libraryScore(i, 0),
+            score: libraryScore(i, 0)[0],
         });
     }
 
@@ -65,16 +68,18 @@ export const solve = ({
         }
         if (pendingSignup <= i) {
             let lib: ScoredOrder | undefined;
+            let books: Array<number> = [];
             while (true) {
                 lib = order.pop();
                 if (!lib) {
                     break;
                 }
-                const score = libraryScore(lib.index, i);
+                const [score, booksTaken] = libraryScore(lib.index, i);
                 if (score !== lib.score) {
                     lib.score = score;
                     order.push(lib);
                 }
+                books = booksTaken;
                 break;
             }
             if (lib) {
@@ -83,6 +88,9 @@ export const solve = ({
                     books: [],
                 });
                 pendingSignup = i + libraries[lib.index].signup;
+                for (const bookId of books) {
+                    potentialBooks.add(bookId);
+                }
             }
         }
     }
