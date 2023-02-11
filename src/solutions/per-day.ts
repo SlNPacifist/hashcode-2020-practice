@@ -23,7 +23,7 @@ export const solve = ({
         const books = library.books
             .filter(bookId => !processedBooks.has(bookId))
             .map(bookId => bookPrices[bookId])
-            .sort();
+            .sort((a, b) => b - a);
         const daysLeft = days - curDay - library.signup;
         const booksTaken = daysLeft * library.booksPerDay;
         return books.slice(0, booksTaken).reduce((sum, val) => sum + val, 0);
