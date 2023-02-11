@@ -18,7 +18,27 @@ export const solve = ({
         lib.books.forEach(b => books.push(b));
         libraryBooks.push(books);
     }
-    const order = new Array(libraries.length).fill(0).map((_, i) => i).sort(() => Math.random() - 0.5);
+    const libraryScore = (index: number, curDay: number) => {
+        const library = libraries[index];
+        const books = library.books
+            .filter(bookId => !processedBooks.has(bookId))
+            .map(bookId => bookPrices[bookId])
+            .sort();
+        const daysLeft = days - curDay - library.signup;
+        const booksTaken = daysLeft * library.booksPerDay;
+        return books.slice(0, booksTaken).reduce((sum, val) => sum + val, 0);
+    }
+    type ScoredOrder = {
+        index: number;
+        score: number;
+    }
+    const order = new Heap<ScoredOrder>((a, b) => b.score - a.score);
+    for (let i = 0; i < libraries.length; i += 1) {
+        order.push({
+            index: i,
+            score: libraryScore(i, 0),
+        });
+    }
 
     for (let i = 0; i < days; i++) {
         for (let l = 0; l < res.length - (pendingSignup <= i ? 0 : 1); l++) {
@@ -43,13 +63,27 @@ export const solve = ({
                 lib.books.push(book);
             }
         }
-        if (pendingSignup <= i && res.length < libraries.length) {
-            const lib = order[res.length];
-            res.push({
-                library: lib,
-                books: [],
-            });
-            pendingSignup = i + libraries[lib].signup;
+        if (pendingSignup <= i) {
+            let lib: ScoredOrder | undefined;
+            while (true) {
+                lib = order.pop();
+                if (!lib) {
+                    break;
+                }
+                const score = libraryScore(lib.index, i);
+                if (score !== lib.score) {
+                    lib.score = score;
+                    order.push(lib);
+                }
+                break;
+            }
+            if (lib) {
+                res.push({
+                    library: lib.index,
+                    books: [],
+                });
+                pendingSignup = i + libraries[lib.index].signup;
+            }
         }
     }
 
