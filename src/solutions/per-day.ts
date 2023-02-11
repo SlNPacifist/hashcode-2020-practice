@@ -64,6 +64,7 @@ export const solve = ({
                     break;
                 }
                 processedBooks.add(book);
+                potentialBooks.add(book);
                 lib.books.push(book);
             }
         }
@@ -79,6 +80,7 @@ export const solve = ({
                 if (score !== lib.score) {
                     lib.score = score;
                     order.push(lib);
+                    continue;
                 }
                 books = booksTaken;
                 break;
