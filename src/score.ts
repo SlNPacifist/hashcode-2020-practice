@@ -1,42 +1,35 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import parseInput from './input';
 import { InputData, OutputData } from './types';
 import { numbers } from './parser';
 import assert from 'assert';
 import _ from "lodash";
 
-// function parseOutput(outputContent: string): OutputData {
-//     const res: OutputData = [];
-//     // Array<[number, Set<number>]>
-//     const lines = outputContent.split('\n').reverse();
+function parseOutput(outputContent: string): OutputData {
+    const res: OutputData = [];
+    const seenLibs = new Set();
+    const lines = outputContent.split('\n').reverse();
 
-//     let n = Number(lines.pop());
-//     while (n--) {
-//         let [id, ...videoIds] = numbers(lines);
-//         res[id] = new Set(videoIds);
-//     }
-//     for (let i = 0; i < res.length; i += 1) {
-//         if (!res[i]) {
-//             res[i] = new Set();
-//         }
-//     }
+    let nLibs = Number(lines.pop());
 
-//     return res;
-// }
+    while (nLibs--) {
+        const [ libId, nBooks ] = numbers(lines);
+        const bookIds = numbers(lines);
 
-// export function calculateScoreFile(inputPath: string, outputPath: string) {
-//     const outputContent = fs.readFileSync(outputPath, 'utf-8');
-//     const output = parseOutput(outputContent);
-//     return calculateScore(inputPath, output);
-// }
+        assert(!seenLibs.has(libId));
+        seenLibs.add(libId);
+        assert.equal(nBooks, bookIds.length);
+        assert.equal(nBooks, new Set(bookIds).size);
 
-// function validateOutput(input: InputData, output: OutputData) {
-//     assert.equal(output.length, input.cacheServersCount);
-//     for (const videos of output) {
-//         const sizeSum = _.sum([...videos].map(id => input.videoSizes[id]));
-//         assert(sizeSum <= input.cacheServerSize, `Cache server videos size is ${sizeSum}, expected no more than ${input.cacheServerSize}`);
-//     }
-// }
+        res.push({
+            library: libId,
+            books: bookIds,
+        });
+    }
+
+    return res;
+}
 
 export function calculateScore(input: InputData, output: OutputData) {
     let result = 0;
@@ -56,7 +49,7 @@ export function calculateScore(input: InputData, output: OutputData) {
             while (processedDayBooks < lib.booksPerDay && libBooksCounted < books.length) {
                 const book = books[libBooksCounted++];
 
-                if (!countedBooks.has(books[book])) {
+                if (!countedBooks.has(book)) {
                     result += input.bookPrices[book];
                     countedBooks.add(book);
                 }
@@ -68,3 +61,16 @@ export function calculateScore(input: InputData, output: OutputData) {
 
     return result;
 }
+
+// function calculateScoreFile(inputPath: string, outputPath: string) {
+//     const outputContent = fs.readFileSync(outputPath, 'utf-8');
+//     const input = parseInput(inputPath);
+//     const output = parseOutput(outputContent);
+//     console.log(input, output);
+//     console.log(calculateScore(input, output));
+// }
+
+// calculateScoreFile(
+//     path.resolve(process.cwd(), 'input/a_example.txt'),
+//     path.resolve(process.cwd(), 'output/pdf_example.txt'),
+// );
