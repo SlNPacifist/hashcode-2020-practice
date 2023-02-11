@@ -34,28 +34,31 @@ function parseOutput(outputContent: string): OutputData {
 export function calculateScore(input: InputData, output: OutputData) {
     let result = 0;
     const countedBooks = new Set();
+    const countedLibraries = new Set();
 
     let nextLibDay = 0;
 
     for (const { books, library } of output) {
+        assert(!countedLibraries.has(library), `Library #${library} duplicated.`);
+        assert.equal(books.length, new Set(books).size, `Books duplicated in lib #${library}.`);
+
+        countedLibraries.add(library);
         const lib = input.libraries[library];
 
-        let libBooksCounted = 0;
         nextLibDay += lib.signup;
         let libDay = nextLibDay;
+        let libBooksCounted = 0;
 
-        while (libDay < input.days) {
+        while (libDay++ < input.days) {
             let processedDayBooks = 0;
-            while (processedDayBooks < lib.booksPerDay && libBooksCounted < books.length) {
+            while (processedDayBooks++ < lib.booksPerDay && libBooksCounted < books.length) {
                 const book = books[libBooksCounted++];
 
                 if (!countedBooks.has(book)) {
                     result += input.bookPrices[book];
                     countedBooks.add(book);
                 }
-                processedDayBooks++;
             }
-            libDay++;
         }
     }
 
